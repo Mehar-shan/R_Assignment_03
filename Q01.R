@@ -1,33 +1,29 @@
-# Load required libraries
+# Load libraries
 library(DBI)
 library(RMariaDB)
 
-# Create a connection to MySQL
+# Connect to MySQL
 con <- dbConnect(
   RMariaDB::MariaDB(),
   user = "root",
-  password = "mysql@576",   # Replace with your MySQL root password
-  dbname = "sakila",                 # The database name you want to use
+  password = "mysql@576",  # your MySQL password
+  dbname = "sakila",
   host = "localhost",
   port = 3306
 )
 
-# Check if the connection is successful
-print("✅ Connected to MySQL successfully!")
+# Q1: Films with rating 'PG' and rental_duration > 5
+query <- "
+SELECT film_id, title, rating, rental_duration
+FROM film
+WHERE rating = 'PG' AND rental_duration > 5;
+"
 
-# List all tables in the sakila database
-tables <- dbListTables(con)
-print("Available Tables in Sakila:")
-print(tables)
+# Execute query
+result <- dbGetQuery(con, query)
 
-# Example: Read data from the 'film' table
-film_data <- dbReadTable(con, "film")
-print(head(film_data))
+# Show result
+print(result)
 
-# Optional: Write this table to CSV
-write.csv(film_data, "film.csv", row.names = FALSE)
-print("✅ 'film.csv' exported successfully!")
-
-# Disconnect after done
+# Close connection
 dbDisconnect(con)
-print("🔌 Connection closed.")
