@@ -3,7 +3,7 @@ library(DBI)
 library(RMariaDB)
 library(data.table)  # for data manipulation
 
-# Connect to MySQL
+# Connect to MySQL database
 con <- dbConnect(
   RMariaDB::MariaDB(),
   user = "root",
