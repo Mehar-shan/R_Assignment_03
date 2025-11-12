@@ -1,34 +1,29 @@
-# Load required libraries
+# Q3: Load libraries
 library(DBI)
 library(RMariaDB)
+library(data.table)
 
-# Create a connection to MySQL
+# Connect to MySQL
 con <- dbConnect(
   RMariaDB::MariaDB(),
-  user = "root",          # MySQL username
-  password = "mysql@576", # MySQL password
-  dbname = "sakila",      # Database name
-  host = "localhost",     # Server name or address
-  port = 3306             # Default MySQL port
+  user = "root",
+  password = "mysql@576",
+  dbname = "sakila",
+  host = "localhost",
+  port = 3306
 )
 
-# Check if connection is successful
-print("Connected to MySQL successfully")
+# Load film and language tables
+film     <- as.data.table(dbReadTable(con, "film"))
+language <- as.data.table(dbReadTable(con, "language"))
 
-# Write MySQL query
-query <- "
-SELECT title, rental_duration, rental_rate, length
-FROM film
-ORDER BY rental_duration DESC
-LIMIT 5;
-"
-
-# Run the query and store result in variable
-result <- dbGetQuery(con, query)
-
-# Show the result
-print(result)
-
-# Close the connection
+# Close connection
 dbDisconnect(con)
-print("Connection closed")
+
+# Merge tables to get language names
+film_lang <- merge(film, language, by = "language_id", all.x = TRUE)
+
+# Count total films per language
+film_count <- film_lang[, .N, by = .(name)]
+setnames(film_count, "N", "total_films")
+print(film_count)

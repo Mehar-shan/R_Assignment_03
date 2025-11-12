@@ -1,4 +1,4 @@
-# Q2: Load libraries
+# Q4: Load libraries
 library(DBI)
 library(RMariaDB)
 library(data.table)
@@ -13,12 +13,15 @@ con <- dbConnect(
   port = 3306
 )
 
-# Load only film table
-film <- as.data.table(dbReadTable(con, "film"))
+# Load only customer table
+customer <- as.data.table(dbReadTable(con, "customer"))
 
 # Close connection
 dbDisconnect(con)
 
-# Q2 query using data.table
-avg_rental <- film[, .(avg_rental_rate = round(mean(rental_rate, na.rm = TRUE),2)), by = rating]
-print(avg_rental)
+# Q4 query using data.table
+customer_store <- customer[, .(
+  customer_name = paste(first_name, last_name),
+  store_id
+)]
+print(customer_store)
